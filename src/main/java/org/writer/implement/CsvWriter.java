@@ -18,12 +18,20 @@ public class CsvWriter implements Writable {
      *
      * @param data     List of objects to write
      * @param fileName Name of the CSV file to create
+     * @throws NullPointerException if data or fileName is null
+     * @throws IllegalArgumentException if data or fileName is empty
      */
     @Override
     public void writeToFile(List<?> data, String fileName) {
-        if (data == null || data.isEmpty()) {
-            return; // Do nothing if the list is empty or null
-        }
+        if (data == null)
+            throw new NullPointerException("data is null or empty");
+        if (fileName == null)
+            throw new NullPointerException("fileName is null");
+
+        if (fileName.isEmpty())
+            throw new IllegalArgumentException("fileName is empty");
+        if (data.isEmpty())
+            throw new IllegalArgumentException("data is empty");
 
         Class<?> clazz = data.get(0).getClass();
         List<Field> csvFields = getCsvFields(clazz);
@@ -95,26 +103,13 @@ public class CsvWriter implements Writable {
                 String listStr = list.stream()
                         .map(Object::toString)
                         .collect(Collectors.joining(";"));
-                return escapeCsv(listStr); // Treat as a single CSV field
+                return listStr; // Treat as a single CSV field
             } else {
-                return escapeCsv(value.toString());
+                return value.toString();
             }
         } catch (IllegalAccessException e) {
             throw new RuntimeException("Failed to access field: " + field.getName(), e);
         }
     }
 
-    /**
-     * Escapes special characters in CSV values (e.g., commas, quotes).
-     *
-     * @param value String to escape
-     * @return Escaped string
-     */
-    private String escapeCsv(String value) {
-        if (value.contains(",") || value.contains("\"") || value.contains("\n")) {
-            value = value.replace("\"", "\"\""); // Escape double quotes
-            return "\"" + value + "\""; // Enclose in quotes
-        }
-        return value;
-    }
 }
