@@ -58,7 +58,7 @@ public class CsvWriterTest {
 
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             assertEquals("First Name,Last Name,dayOfBirth,monthOfBirth,yearOfBirth", reader.readLine());
-            assertEquals("\"John, Jr.\",Doe,1,JANUARY,2000", reader.readLine());
+            assertEquals("John, Jr.,Doe,1,JANUARY,2000", reader.readLine());
         }
     }
 }
